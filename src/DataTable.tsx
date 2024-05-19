@@ -1,35 +1,24 @@
-import React from 'react';
+import Papa from 'papaparse';
 
-interface JobCountPerYear {
-  work_year: number;
-  jobCount: number;
+
+type Callback = (data:any) => void;
+
+const DataTable = () => {
+
+  const fetchCsvData = async (filePath: string, callback: Callback) => {
+    const response = await fetch(filePath);
+    const reader = response.body!.getReader();
+    const result = await reader.read();
+    const decoder = new TextDecoder('utf-8');
+    const csvString = decoder.decode(result.value!);
+    const { data } = Papa.parse(csvString, {
+      header: true,
+      dynamicTyping: true
+    });
+    callback(data)
+  }
+  return { fetchCsvData }
+
 }
-
-interface DataTableProps {
-  data: JobCountPerYear[];
-}
-
-const DataTable: React.FC<DataTableProps> = ({ data }) => {
-  return (
-    <div className="data-table">
-      <table>
-        <thead>
-          <tr>
-            <th>Year</th><br></br>
-            <th>Number of Jobs</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((job) => (
-            <tr key={job.work_year}>
-              <td>{job.work_year}</td>
-              <td>{job.jobCount}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};
 
 export default DataTable;

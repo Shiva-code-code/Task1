@@ -1,49 +1,58 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import './App.css'
 import DataTable from './DataTable';
-import Papa from 'papaparse';
 
-interface SalaryData {
-  work_year: number;
-  job_tittle: number;
-  averageSalary: number;
-}
+let one24 = 0;
+let one23 = 0;
+let one22 = 0;
+let one21 = 0;
 
-interface JobCountPerYear {
-  work_year: number;
-  jobCount: number;
-}
 
-const App: React.FC = () => {
-  const [data, setData] = useState<SalaryData[]>([]);
-  const [jobCountsPerYear, setJobCountsPerYear] = useState<JobCountPerYear[]>([]);
+function App() {
+  const [data, setData] = useState<any[]>([]) 
+  const { fetchCsvData } = DataTable();
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch('salaries.csv'); // Replace with your CSV path
-      const csvData = await response.text();
-      const parsedData = Papa.parse(csvData, { header: true }).data as SalaryData[]; // Type assertion for clarity
-      setData(parsedData);
-
-      // Calculate job counts per year
-      const jobCounts = parsedData.reduce((acc: JobCountPerYear[], job_tittle: SalaryData) => {
-        const year = job_tittle.work_year;
-        const existingCount = acc.find((count) => count.work_year === year)?.jobCount || 0; // Account for existing years and default to 0
-        acc.push({ work_year: year, jobCount: existingCount + job_tittle.job_tittle });
-        return acc;
-      }, [] as JobCountPerYear[]);
-
-      setJobCountsPerYear(jobCounts);
-    };
-
-    fetchData();
-  }, []);
-
+    fetchCsvData('./src/hooks/salaries.csv', setData)
+  }, [])
+  console.log(data);
   return (
+    <>
+    <h1>Main Table</h1>
+    <div className='card'>
     <div className="App">
-      <h1>ML Engineer Salaries</h1>
-      <DataTable data={jobCountsPerYear} /> {/* Pass jobCountsPerYear to DataTable */}
+      <table className='table'>
+        <thead>
+          <tr>
+            <th>Year</th>
+            <th>Number of jobs</th>
+            <th>Average salary</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>
+              {data.map(work => (
+                <p>{work["work_year"]}</p>
+              ))}
+            </th>
+            <th>
+              {data.map(job => (
+                <p>{job["job_title"]}</p>
+              ))}
+            </th>
+            <th>
+              {data.map(sal => (
+                <p>{sal["salary"]}</p>
+              ))}
+            </th>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  );
-};
-
+    </div>
+    </>
+    
+  )
+}
 export default App;

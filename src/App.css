@@ -11,6 +11,24 @@ body{
   background-color: white;
 }
 
+.App {
+  text-align: center;
+  padding: 20px;
+}
+
+table {
+  margin-top: 30px;
+}
+
+.card {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  background-color: rgb(224, 219, 219);
+  border-radius: 30px;
+}
+
 
 
 
